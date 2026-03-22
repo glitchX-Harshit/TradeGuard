@@ -6,6 +6,7 @@ def execute_mt5_order(trade_data: dict) -> bool:
     pass
 
 
+
 import MetaTrader5 as mt5
 
 # Initialize MT5

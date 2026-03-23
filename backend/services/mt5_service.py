@@ -1,52 +1,31 @@
-# Placeholder for MetaTrader 5 integration
-# Functions here would handle actual MT5 order execution.
-
-def execute_mt5_order(trade_data: dict) -> bool:
-    """Mock MT5 execution"""
-    pass
-
-
 import MetaTrader5 as mt5
 
-# Initialize MT5
-if not mt5.initialize():
-    print("Initialization failed")
-    quit()
+mt5.initialize()
 
 symbol = "EURUSD"
+mt5.symbol_select(symbol, True)
 
-# Select symbol
-if not mt5.symbol_select(symbol, True):
-    print("Failed to select symbol")
-    quit()
-
-# Get symbol info
-info = mt5.symbol_info(symbol)
-print("Execution mode:", info.trade_exemode)
-print("Filling mode:", info.filling_mode)
-
-# Get price
 tick = mt5.symbol_info_tick(symbol)
 
-# Create order request
+# Stop Loss & Take Profit
+sl = tick.ask - 0.0020   # 20 pips
+tp = tick.ask + 0.0040   # 40 pips
+
 request = {
     "action": mt5.TRADE_ACTION_DEAL,
     "symbol": symbol,
     "volume": 0.01,
     "type": mt5.ORDER_TYPE_BUY,
     "price": tick.ask,
+    "sl": sl,
+    "tp": tp,
     "deviation": 20,
     "magic": 123456,
     "comment": "test order",
     "type_time": mt5.ORDER_TIME_GTC,
-    "type_filling": mt5.ORDER_FILLING_FOK,  # try FOK
+    "type_filling": mt5.ORDER_FILLING_FOK,
 }
 
-# Send order
 result = mt5.order_send(request)
 
-# Print result
-print("RESULT:", result)
-
-# Shutdown MT5
-mt5.shutdown()
+print(result)

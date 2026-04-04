@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeGuard — Home</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-logo">TradeGuard</a>
+    <ul class="navbar-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="rules.html">My Rules</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-heading">
+      <h1>Welcome to TradeGuard</h1>
+      <p>Your personal trading discipline system. Set your rules, place trades, and track your performance.</p>
+    </div>
+
+    <!-- hint message — shown until user makes trades -->
+    <div class="alert alert-success" id="live-stats-hint" style="margin-bottom: 20px">
+      👋 Welcome! Head to <a href="rules.html" style="color: var(--green)">My Rules</a> to set your limits, then go to
+      the <a href="dashboard.html" style="color: var(--green)">Dashboard</a> to place your first trade.
+    </div>
+
+    <!-- 4 quick stat boxes — updated from backend on load -->
+    <div class="stat-row">
+      <div class="stat-box blue">
+        <div class="stat-label">Trades Today</div>
+        <div class="stat-number blue" id="live-trades-today">0</div>
+        <div class="stat-note">No trades yet</div>
+      </div>
+      <div class="stat-box green">
+        <div class="stat-label">Today's Profit</div>
+        <div class="stat-number green" id="live-daily-pnl">$0</div>
+        <div class="stat-note">Make trades to update</div>
+      </div>
+      <div class="stat-box yellow">
+        <div class="stat-label">Discipline Score</div>
+        <div class="stat-number yellow" id="live-score">100</div>
+        <div class="stat-note">Starts perfect, follow your rules</div>
+      </div>
+      <div class="stat-box red">
+        <div class="stat-label">Rule Violations</div>
+        <div class="stat-number red" id="live-violations">0</div>
+        <div class="stat-note">Keep it at zero!</div>
+      </div>
+    </div>
+
+    <!-- Quick links to each section -->
+    <div class="grid-3">
+
+      <div class="card">
+        <div class="card-title">My Rules</div>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; line-height: 1.6">
+          Set your daily trade limits, max loss, risk per trade, and more.
+          Every trade gets checked against these before it goes through.
+        </p>
+        <a href="rules.html" class="btn btn-outline btn-full">Go to Rules</a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Trade Dashboard</div>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; line-height: 1.6">
+          Place a trade and see it validated in real time.
+          Your trade history is shown in a table below the form.
+        </p>
+        <a href="dashboard.html" class="btn btn-primary btn-full">Open Dashboard</a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Analytics</div>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; line-height: 1.6">
+          See your daily profit/loss chart, discipline score over time,
+          win rate, and a breakdown of rule violations.
+        </p>
+        <a href="analytics.html" class="btn btn-outline btn-full">View Analytics</a>
+      </div>
+
+    </div>
+
+    <!-- How it works -->
+    <div class="card">
+      <div class="card-title">How It Works</div>
+      <div class="grid-3" style="margin-bottom: 0">
+
+        <div>
+          <div style="font-size: 24px; margin-bottom: 10px">1️⃣</div>
+          <div style="font-weight: 600; margin-bottom: 6px">Set Your Rules</div>
+          <div style="color: var(--text-dim); font-size: 13px; line-height: 1.6">
+            Go to the Rules page and enter your limits — max trades, max loss, risk %, and more.
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 24px; margin-bottom: 10px">2️⃣</div>
+          <div style="font-weight: 600; margin-bottom: 6px">Place a Trade</div>
+          <div style="color: var(--text-dim); font-size: 13px; line-height: 1.6">
+            Go to the Dashboard, fill in the trade form, and hit Send. The system checks your rules first.
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 24px; margin-bottom: 10px">3️⃣</div>
+          <div style="font-weight: 600; margin-bottom: 6px">Track Your Progress</div>
+          <div style="color: var(--text-dim); font-size: 13px; line-height: 1.6">
+            Check the Analytics page to see how disciplined you've been and where you can improve.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">© 2026 TradeGuard — Trading Discipline System</footer>
+  <div id="toast-area"></div>
+  <script src="script.js"></script>
+  <script>
+    // Try to load live stats from the backend when the page opens
+    loadLiveStats();
+  </script>
+
+</body>
+
+</html>

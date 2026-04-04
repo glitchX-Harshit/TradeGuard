@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeGuard — Analytics</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-logo">TradeGuard</a>
+    <ul class="navbar-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rules.html">My Rules</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html" class="active">Analytics</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-heading">
+      <h1>Analytics</h1>
+      <p>A look at how you've been trading. Charts update based on your trade history.</p>
+    </div>
+
+    <!-- hint message — shown until user makes trades -->
+    <div class="alert alert-success" id="live-stats-hint" style="margin-bottom: 20px">
+      👋 No trades yet — go to the <a href="dashboard.html" style="color: var(--green)">Dashboard</a> to place trades
+      and your charts will fill in automatically.
+    </div>
+
+    <!-- 4 summary boxes — updated from backend on load -->
+    <div class="stat-row">
+      <div class="stat-box green">
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-number green" id="live-win-rate">—</div>
+        <div class="stat-note">No trades yet</div>
+      </div>
+      <div class="stat-box blue">
+        <div class="stat-label">Average R:R</div>
+        <div class="stat-number blue" id="live-avg-rr">—</div>
+        <div class="stat-note">No trades yet</div>
+      </div>
+      <div class="stat-box yellow">
+        <div class="stat-label">Avg Discipline Score</div>
+        <div class="stat-number yellow" id="live-score">100</div>
+        <div class="stat-note">Starts perfect</div>
+      </div>
+      <div class="stat-box red">
+        <div class="stat-label">Total Rule Breaks</div>
+        <div class="stat-number red" id="live-violations">0</div>
+        <div class="stat-note">Keep it at zero!</div>
+      </div>
+    </div>
+
+    <!-- Two big charts -->
+    <div class="grid-2">
+
+      <div class="card">
+        <div class="card-title">Daily Profit / Loss — Last 30 Days</div>
+        <div class="chart-container">
+          <canvas id="pnl-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Discipline Score Over Time</div>
+        <div class="chart-container">
+          <canvas id="score-chart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Three smaller charts -->
+    <div class="grid-3">
+
+      <div class="card">
+        <div class="card-title">Wins vs Losses</div>
+        <div class="chart-container short">
+          <canvas id="winloss-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Trades by Symbol</div>
+        <div class="chart-container short">
+          <canvas id="symbols-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Types of Rule Breaks</div>
+        <div class="chart-container short">
+          <canvas id="violations-chart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer class="footer">© 2026 TradeGuard — Trading Discipline System</footer>
+  <div id="toast-area"></div>
+
+  <script src="script.js"></script>
+  <script src="analytics.js"></script>
+  <script>
+    // Try to load live stats from the backend when the page opens
+    loadLiveStats();
+  </script>
+</body>
+
+</html>

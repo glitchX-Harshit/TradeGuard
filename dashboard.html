@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeGuard — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-logo">TradeGuard</a>
+    <ul class="navbar-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rules.html">My Rules</a></li>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-heading">
+      <h1>Trade Dashboard</h1>
+      <p>Place a trade and check your rule status. All trades are validated before being sent to MT5.</p>
+    </div>
+
+    <!-- Warning messages show up here when limits are close -->
+    <div id="dashboard-warnings"></div>
+
+    <!-- This message shows until the user places their first trade -->
+    <div id="first-trade-hint" class="alert alert-success" style="margin-bottom: 20px">
+      👋 No trades yet — place your first trade below and the stats will update automatically.
+    </div>
+
+    <!-- 4 stat boxes at the top -->
+    <div class="stat-row">
+      <div class="stat-box blue">
+        <div class="stat-label">Trades Today</div>
+        <div class="stat-number blue" id="stat-trades">0</div>
+        <div class="stat-note">Max: <span id="stat-max-trades">5</span></div>
+      </div>
+      <div class="stat-box green">
+        <div class="stat-label">Daily P&L</div>
+        <div class="stat-number green" id="stat-pnl">$0</div>
+        <div class="stat-note">Loss limit: $<span id="stat-max-loss">500</span></div>
+      </div>
+      <div class="stat-box yellow">
+        <div class="stat-label">Discipline Score</div>
+        <div class="stat-number yellow" id="stat-score">100</div>
+        <div class="stat-note">Goes up when you follow rules</div>
+      </div>
+      <div class="stat-box red">
+        <div class="stat-label">Violations</div>
+        <div class="stat-number red" id="stat-violations">0</div>
+        <div class="stat-note">This session</div>
+      </div>
+    </div>
+
+    <!-- Trade form + progress bars side by side -->
+    <div class="grid-2">
+
+      <!-- Trade form -->
+      <div class="card">
+        <div class="card-title">Place a Trade</div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label>Symbol</label>
+            <select id="trade-symbol">
+              <option>EURUSD</option>
+              <option>GBPUSD</option>
+              <option>XAUUSD</option>
+              <option>NAS100</option>
+              <option>US30</option>
+              <option>BTCUSD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Buy or Sell</label>
+            <select id="trade-direction">
+              <option>BUY</option>
+              <option>SELL</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label>Lot Size</label>
+            <input type="number" id="trade-lot" value="0.10" step="0.01" min="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Risk %</label>
+            <input type="number" id="trade-risk" value="1.5" step="0.1" min="0.1" />
+          </div>
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label>Stop Loss (pips)</label>
+            <input type="number" id="trade-stoploss" value="30" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Take Profit (pips)</label>
+            <input type="number" id="trade-takeprofit" value="60" min="1" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="submitTrade()">
+          Send Trade to MT5
+        </button>
+      </div>
+
+      <!-- Progress bars showing how close you are to your limits -->
+      <div class="card">
+        <div class="card-title">How Close Are You to Your Limits?</div>
+
+        <div class="progress-group">
+          <div class="progress-top">
+            <span>Trades Used Today</span>
+            <span id="bar-label-trades">0 / 5</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar green" id="bar-trades" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="progress-group">
+          <div class="progress-top">
+            <span>Daily Loss So Far</span>
+            <span id="bar-label-loss">$0 / $500</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar green" id="bar-loss" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="progress-group">
+          <div class="progress-top">
+            <span>Risk on This Trade</span>
+            <span id="bar-label-risk">1.5% / 2%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar green" id="bar-risk" style="width: 75%"></div>
+          </div>
+        </div>
+
+        <div class="progress-group">
+          <div class="progress-top">
+            <span>Total Drawdown</span>
+            <span>$0 / $1,000</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar green" style="width: 0%"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Trade history table -->
+    <div class="card">
+      <div class="card-title">
+        Trade History
+        <button class="btn btn-outline" style="margin-left: auto; padding: 5px 14px; font-size: 12px"
+          onclick="loadTradeTable()">
+          Refresh
+        </button>
+      </div>
+      <div class="table-wrapper">
+        <table class="trade-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Symbol</th>
+              <th>Direction</th>
+              <th>Lot</th>
+              <th>Open Price</th>
+              <th>Stop Loss</th>
+              <th>Take Profit</th>
+              <th>Profit / Loss</th>
+              <th>Status</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="trade-table-body">
+            <!-- Rows are added by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Popup that shows before a trade is confirmed -->
+  <div class="popup-backdrop" id="trade-popup">
+    <div class="popup-box">
+      <div class="popup-title" id="popup-title">Confirm Trade</div>
+      <div class="popup-subtitle" id="popup-subtitle">Check the details below before sending.</div>
+      <div id="popup-body"></div>
+      <div class="popup-footer">
+        <button class="btn btn-outline" onclick="closePopup()">Cancel</button>
+        <button class="btn btn-primary" id="popup-confirm-btn" onclick="confirmTrade()">Yes, Send It</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">© 2026 TradeGuard — Trading Discipline System</footer>
+  <div id="toast-area"></div>
+
+  <script src="script.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+
+</html>

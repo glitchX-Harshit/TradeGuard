@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TradeGuard — Your personal trading discipline system. Set rules, execute trades, and track performance with absolute clarity." />
+  <title>TradeGuard — Trading Discipline System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="navbar-logo">TradeGuard</a>
+
+      <!-- Desktop nav links -->
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="rules.html">My Rules</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="analytics.html">Analytics</a></li>
+      </ul>
+
+      <div class="nav-right">
+        <a href="dashboard.html" class="btn-nav">Get Started</a>
+        <!-- Mobile hamburger -->
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="mobile-drawer" id="mobileDrawer">
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="rules.html">My Rules</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="analytics.html">Analytics</a></li>
+        <li><a href="dashboard.html" class="btn btn-primary">Get Started</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="page-wrapper">
+
+    <!-- HERO -->
+    <section class="hero-section">
+      <div class="hero-badge">Live System</div>
+      <h1 class="hero-title">Master Your<br><span class="text-accent">Trading Discipline.</span></h1>
+      <p class="hero-subtitle">Set precise rules, execute flawlessly, and track your performance with absolute clarity — all in one place.</p>
+      <div class="hero-cta">
+        <a href="dashboard.html" class="btn btn-primary">Open Dashboard</a>
+        <a href="rules.html" class="btn btn-ghost">Set My Rules</a>
+      </div>
+    </section>
+
+    <!-- WELCOME HINT -->
+    <div class="alert-banner" id="live-stats-hint">
+      <span class="alert-icon">👋</span>
+      <span>Welcome! Head to <a href="rules.html" class="alert-link">My Rules</a> to set your limits, then visit the <a href="dashboard.html" class="alert-link">Dashboard</a> to place your first trade.</span>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="stats-grid">
+
+      <div class="stat-card stat-blue">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="stat-value" id="live-trades-today">0</div>
+        <div class="stat-label">Trades Today</div>
+        <div class="stat-note">No trades yet</div>
+      </div>
+
+      <div class="stat-card stat-green">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="stat-value stat-positive" id="live-daily-pnl">$0</div>
+        <div class="stat-label">Today's Profit</div>
+        <div class="stat-note">Make trades to update</div>
+      </div>
+
+      <div class="stat-card stat-purple">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="stat-value" id="live-score">100</div>
+        <div class="stat-label">Discipline Score</div>
+        <div class="stat-note">Starts perfect</div>
+      </div>
+
+      <div class="stat-card stat-red">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </div>
+        <div class="stat-value stat-negative" id="live-violations">0</div>
+        <div class="stat-label">Rule Violations</div>
+        <div class="stat-note">Keep it at zero!</div>
+      </div>
+
+    </div>
+
+    <!-- FEATURE CARDS -->
+    <div class="section-label">Modules</div>
+    <div class="feature-grid">
+
+      <a href="rules.html" class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-num">01</div>
+          <div class="feature-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </div>
+        <div class="feature-title">My Rules</div>
+        <p class="feature-desc">Define your trading limits. Max trades, max daily loss, risk per trade — all enforced automatically before any trade is placed.</p>
+        <div class="feature-footer">Configure limits →</div>
+      </a>
+
+      <a href="dashboard.html" class="feature-card feature-card--primary">
+        <div class="feature-card-header">
+          <div class="feature-num">02</div>
+          <div class="feature-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </div>
+        <div class="feature-title">Trade Dashboard</div>
+        <p class="feature-desc">Place trades in real time. Every trade is validated against your rules, and your full trade history is visible at a glance.</p>
+        <div class="feature-footer">Open dashboard →</div>
+      </a>
+
+      <a href="analytics.html" class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-num">03</div>
+          <div class="feature-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </div>
+        <div class="feature-title">Analytics</div>
+        <p class="feature-desc">Track P&amp;L trends, discipline scores over time, win rate, and rule violation breakdowns with intuitive charts.</p>
+        <div class="feature-footer">View analytics →</div>
+      </a>
+
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section">
+      <div class="section-label">Process</div>
+      <h2 class="how-title">How It Works.</h2>
+      <div class="steps-grid">
+
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="step-title">Set Your Rules</div>
+            <div class="step-desc">Define your personal trading limits — max trades, max loss, risk %, and more. This becomes your non-negotiable framework.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="step-title">Execute Trades</div>
+            <div class="step-desc">Submit trades on the dashboard. TradeGuard validates each one in real time — blocking rule violations before they happen.</div>
+          </div>
+        </div>
+
+        <div class="step-divider"></div>
+
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="step-title">Review & Improve</div>
+            <div class="step-desc">Open analytics to see where discipline held and where it broke down. Learn the pattern, close the gap, repeat.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">TradeGuard</div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="rules.html">Rules</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="analytics.html">Analytics</a>
+      </div>
+      <div class="footer-copy">© 2026 TradeGuard. Trading Discipline System.</div>
+    </div>
+  </footer>
+
+  <div id="toast-area"></div>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Live stats
+    if (typeof loadLiveStats === 'function') loadLiveStats();
+
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      drawer.classList.toggle('open');
+    });
+
+    // Scroll-shrink navbar
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // GSAP
+    document.addEventListener('DOMContentLoaded', () => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Hero
+      gsap.fromTo('.hero-badge',   { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out', delay: 0.1 });
+      gsap.fromTo('.hero-title',   { y: 50, opacity: 0 },  { y: 0, opacity: 1, duration: 1.1, ease: 'power4.out', delay: 0.2 });
+      gsap.fromTo('.hero-subtitle',{ y: 30, opacity: 0 },  { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', delay: 0.4 });
+      gsap.fromTo('.hero-cta',     { y: 20, opacity: 0 },  { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.55 });
+
+      // Alert banner
+      gsap.fromTo('.alert-banner', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+        scrollTrigger: { trigger: '.alert-banner', start: 'top 90%' }
+      });
+
+      // Stats
+      gsap.fromTo('.stat-card', { y: 30, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+        scrollTrigger: { trigger: '.stats-grid', start: 'top 85%' }
+      });
+
+      // Feature cards
+      gsap.fromTo('.feature-card', { y: 40, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.85, stagger: 0.15, ease: 'power4.out',
+        scrollTrigger: { trigger: '.feature-grid', start: 'top 80%' }
+      });
+
+      // Steps
+      gsap.fromTo('.step-item', { x: -30, opacity: 0 }, {
+        x: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: 'power3.out',
+        scrollTrigger: { trigger: '.steps-grid', start: 'top 85%' }
+      });
+    });
+  </script>
+
+</body>
+</html>

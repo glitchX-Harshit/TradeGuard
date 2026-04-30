@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeGuard — My Rules</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-logo">TradeGuard</a>
+    <ul class="navbar-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rules.html" class="active">My Rules</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analytics.html">Analytics</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-heading">
+      <h1>My Trading Rules</h1>
+      <p>Set your limits here. Every trade will be checked against these rules before it goes through.</p>
+    </div>
+
+    <div class="grid-2">
+
+      <!-- Left card: number limits -->
+      <div class="card">
+        <div class="card-title">Set My Limits</div>
+
+        <div class="form-group">
+          <label>Max Trades Per Day</label>
+          <input type="number" id="max-trades" value="5" min="1" max="50" />
+        </div>
+
+        <div class="form-group">
+          <label>Max Daily Loss ($)</label>
+          <input type="number" id="max-loss" value="500" min="10" />
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label>Max Risk Per Trade (%)</label>
+            <input type="number" id="max-risk" value="2" step="0.1" min="0.1" />
+          </div>
+          <div class="form-group">
+            <label>Max Drawdown ($)</label>
+            <input type="number" id="max-drawdown" value="1000" min="50" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Minimum Reward-to-Risk Ratio</label>
+          <input type="number" id="min-rr" value="1.5" step="0.1" min="0.5" />
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="saveRules()">Save My Rules</button>
+      </div>
+
+      <!-- Right card: on/off toggles -->
+      <div class="card">
+        <div class="card-title">Turn Rules On or Off</div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-name">Stop Loss Required</div>
+            <div class="toggle-desc">Block any trade that has no stop loss set</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="rule-stoploss" checked />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-name">Enforce Reward-to-Risk Ratio</div>
+            <div class="toggle-desc">Block trades where the reward is too low vs the risk</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="rule-rr" checked />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-name">Daily Trade Limit</div>
+            <div class="toggle-desc">Stop trading once you hit your max trades for the day</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="rule-daily-cap" checked />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-name">Daily Loss Limit</div>
+            <div class="toggle-desc">Stop trading once you hit your max daily loss</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="rule-loss-limit" checked />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-name">Revenge Trade Warning</div>
+            <div class="toggle-desc">Warn me if I try to trade too quickly after a loss</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="rule-revenge" />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Recent rule violations — loaded from backend or session -->
+    <div class="card">
+      <div class="card-title">Recent Rule Violations</div>
+      <div id="violations-list">
+        <!-- Filled in by rules.js -->
+        <div style="color: var(--text-dim); font-size: 13px; padding: 12px 0">
+          No violations yet. Keep following your rules!
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">© 2026 TradeGuard — Trading Discipline System</footer>
+  <div id="toast-area"></div>
+
+  <script src="script.js"></script>
+  <script src="rules.js"></script>
+</body>
+
+</html>

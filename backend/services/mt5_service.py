@@ -63,11 +63,12 @@ class MT5Service:
             
         price = tick.ask if side == "BUY" else tick.bid
 
-        # Dynamically determine the best filling type
-        filling_type = mt5.ORDER_FILLING_IOC
-        if symbol_info.filling_mode & mt5.SYMBOL_FILLING_FOK:
+        # Determine filling mode using bit flags on filling_mode integer
+        # bit 0 = FOK supported, bit 1 = IOC supported
+        filling_mode = symbol_info.filling_mode
+        if filling_mode & 1:  # FOK supported
             filling_type = mt5.ORDER_FILLING_FOK
-        elif symbol_info.filling_mode & mt5.SYMBOL_FILLING_IOC:
+        elif filling_mode & 2:  # IOC supported
             filling_type = mt5.ORDER_FILLING_IOC
         else:
             filling_type = mt5.ORDER_FILLING_RETURN
@@ -89,10 +90,10 @@ class MT5Service:
         
         result = mt5.order_send(request)
         if result is None:
-            return {"success": False, "message": "No response from MT5"}
+            return {"success": False, "message": f"No response from MT5. Last error: {mt5.last_error()}"}
             
         if result.retcode != mt5.TRADE_RETCODE_DONE:
-            return {"success": False, "message": f"Order send failed, retcode={result.retcode} ({result.comment})"}
+            return {"success": False, "message": f"Order failed: retcode={result.retcode} — {result.comment}"}
             
         return {
             "success": True, 

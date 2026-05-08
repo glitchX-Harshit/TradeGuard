@@ -1,43 +1,89 @@
-<<<<<<< HEAD
-# Placeholder for MetaTrader 5 integration
-# Functions here would handle actual MT5 order execution.
-
-def execute_mt5_order(trade_data: dict) -> bool:
-    """Mock MT5 execution"""
-    pass
-
-
-
-=======
->>>>>>> bc618b775d7f0158e2f8c61f25cfe91eef84c878
 import MetaTrader5 as mt5
+from datetime import datetime
 
-mt5.initialize()
+class MT5Service:
+    def __init__(self):
+        self.connected = False
 
-symbol = "EURUSD"
-mt5.symbol_select(symbol, True)
+    def connect(self, login_id: int, password: str, server: str):
+        if not mt5.initialize():
+            print("initialize() failed")
+            return False
+        
+        authorized = mt5.login(login_id, password=password, server=server)
+        if authorized:
+            self.connected = True
+            return True
+        else:
+            print(f"failed to connect at account #{login_id}, error code: {mt5.last_error()}")
+            return False
 
-tick = mt5.symbol_info_tick(symbol)
+    def disconnect(self):
+        mt5.shutdown()
+        self.connected = False
 
-# Stop Loss & Take Profit
-sl = tick.ask - 0.0020   # 20 pips
-tp = tick.ask + 0.0040   # 40 pips
+    def get_account_info(self):
+        if not self.connected:
+            return {"balance": 0.0, "equity": 0.0, "margin": 0.0, "profit": 0.0}
+        
+        account_info = mt5.account_info()
+        if account_info != None:
+            return account_info._asdict()
+        return {"balance": 0.0, "equity": 0.0, "margin": 0.0, "profit": 0.0}
 
-request = {
-    "action": mt5.TRADE_ACTION_DEAL,
-    "symbol": symbol,
-    "volume": 0.01,
-    "type": mt5.ORDER_TYPE_BUY,
-    "price": tick.ask,
-    "sl": sl,
-    "tp": tp,
-    "deviation": 20,
-    "magic": 123456,
-    "comment": "test order",
-    "type_time": mt5.ORDER_TIME_GTC,
-    "type_filling": mt5.ORDER_FILLING_FOK,
-}
+    def get_market_price(self, symbol: str, side: str):
+        if not self.connected:
+            return 1.1000 # Fallback
+        
+        tick = mt5.symbol_info_tick(symbol)
+        if tick is None:
+            return 1.1000
+        return tick.ask if side == "BUY" else tick.bid
 
-result = mt5.order_send(request)
+    def execute_trade(self, symbol: str, side: str, lot_size: float, sl: float, tp: float):
+        if not self.connected:
+            return {
+                "success": True,
+                "ticket": int(datetime.timestamp(datetime.now())),
+                "price": 1.1000,
+                "message": "Simulated trade execution (MT5 disconnected)"
+            }
+            
+        symbol_info = mt5.symbol_info(symbol)
+        if symbol_info is None:
+            return {"success": False, "message": f"{symbol} not found"}
+        
+        if not symbol_info.visible:
+            if not mt5.symbol_select(symbol, True):
+                return {"success": False, "message": f"{symbol} not found"}
+        
+        point = mt5.symbol_info(symbol).point
+        price = mt5.symbol_info_tick(symbol).ask if side == "BUY" else mt5.symbol_info_tick(symbol).bid
+        
+        request = {
+            "action": mt5.TRADE_ACTION_DEAL,
+            "symbol": symbol,
+            "volume": lot_size,
+            "type": mt5.ORDER_TYPE_BUY if side == "BUY" else mt5.ORDER_TYPE_SELL,
+            "price": price,
+            "sl": sl,
+            "tp": tp,
+            "deviation": 20,
+            "magic": 234000,
+            "comment": "TradeGuard Execution",
+            "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": mt5.ORDER_FILLING_IOC,
+        }
+        
+        result = mt5.order_send(request)
+        if result.retcode != mt5.TRADE_RETCODE_DONE:
+            return {"success": False, "message": f"Order send failed, retcode={result.retcode}"}
+            
+        return {
+            "success": True, 
+            "ticket": result.order,
+            "price": result.price,
+            "message": "Trade executed successfully"
+        }
 
-print(result)
+mt5_service = MT5Service()

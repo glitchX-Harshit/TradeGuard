@@ -1,16 +1,30 @@
 from fastapi import FastAPI
-from routes import trade_routes, rule_routes
+from fastapi.middleware.cors import CORSMiddleware
+from database.database import engine, Base
+from routes import auth, trade, rule, analytics
+from utils.mt5_init import initialize_mt5
 
-app = FastAPI(
-    title="TradeGuard API",
-    description="Backend foundation for AI-Driven Trading Discipline System",
-    version="1.0.0"
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="TradeGuard AI")
+
+@app.on_event("startup")
+def startup_event():
+    initialize_mt5()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Include Routers
-app.include_router(trade_routes.router, tags=["Trades"])
-app.include_router(rule_routes.router, tags=["Rules"])
+app.include_router(auth.router, tags=["Auth"])
+app.include_router(trade.router, tags=["Trade"])
+app.include_router(rule.router, tags=["Rule"])
+app.include_router(analytics.router, tags=["Analytics"])
 
 @app.get("/")
 def root():
-    return {"message": "TradeGuard Backend is running!"}
+    return {"message": "TradeGuard AI API is running."}

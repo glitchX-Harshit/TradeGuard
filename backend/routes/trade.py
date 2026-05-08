@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+import MetaTrader5 as mt5
 from schemas import schemas
 from database.database import get_db
 from models import models
@@ -29,10 +30,19 @@ def execute_trade(req: schemas.TradeExecutionRequest, db: Session = Depends(get_
         db.refresh(trade)
         raise HTTPException(status_code=400, detail=validation["reason"])
     
-    current_price = mt5_service.get_market_price(req.symbol, req.order_type)
+    symbol_info = mt5.symbol_info(req.symbol) if mt5_service.connected else None
     
-    pips_val = req.stop_loss_pips * 0.0001
-    tp_pips_val = (req.stop_loss_pips * req.risk_reward_ratio) * 0.0001
+    if symbol_info:
+        point = symbol_info.point
+        pip_multiplier = 10 * point if symbol_info.digits in [3, 5] else point
+    else:
+        # Fallback for when MT5 is not connected (demo/simulation mode)
+        pip_multiplier = 0.0001
+
+    pips_val = req.stop_loss_pips * pip_multiplier
+    tp_pips_val = (req.stop_loss_pips * req.risk_reward_ratio) * pip_multiplier
+    
+    current_price = mt5_service.get_market_price(req.symbol, req.order_type)
     
     if req.order_type == "BUY":
         sl_price = current_price - pips_val

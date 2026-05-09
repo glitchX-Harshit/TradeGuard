@@ -59,5 +59,7 @@ npm run dev
 
 ---
 
-## ⚖️ Governance
+## ⚖️ Governance & License
 TradeGuard is designed for professional traders who require absolute discipline. It acts as a hard buffer between the trader and the market, preventing impulsive decisions through automated protocol enforcement.
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.

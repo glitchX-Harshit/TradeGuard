@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { getRules, createRule } from '../services/api'
-import { ShieldCheck, Save, Loader2 } from 'lucide-react'
+import { getRules, updateRules } from '../services/api'
+import { ShieldCheck, AlertCircle, Save } from 'lucide-react'
+import MagButton from '../components/MagButton'
 
 export default function Rules() {
   const [form, setForm] = useState({
@@ -12,119 +13,93 @@ export default function Rules() {
     max_open_positions: 2,
     revenge_trading_block: true
   })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [status, setStatus] = useState(null)
 
   useEffect(() => {
-    getRules().then(res => {
-      if (res.data) setForm(res.data)
-      setLoading(false)
-    }).catch(err => {
-      console.error("Error fetching rules:", err)
-      setLoading(false)
-    })
+    getRules().then(res => setForm(res.data))
   }, [])
 
   const handleChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
+    const value = e.target.type === 'checkbox' ? e.target.checked : parseFloat(e.target.value)
     setForm({ ...form, [e.target.name]: value })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setSaving(true)
-    setStatus(null)
     try {
-      await createRule({
-        max_trades: parseInt(form.max_trades),
-        max_daily_loss: parseFloat(form.max_daily_loss),
-        risk_percentage: parseFloat(form.risk_percentage),
-        rr_ratio: parseFloat(form.rr_ratio),
-        cooldown_minutes: parseInt(form.cooldown_minutes),
-        max_open_positions: parseInt(form.max_open_positions),
-        revenge_trading_block: form.revenge_trading_block
-      })
-      setStatus({ type: 'success', message: 'Rules updated successfully' })
-      setTimeout(() => setStatus(null), 3000)
+      await updateRules(form)
+      setStatus({ type: 'success', message: 'Rules updated successfully. Protection active.' })
     } catch (err) {
-      console.error("Error saving rules:", err)
-      setStatus({ type: 'error', message: 'Failed to update rules' })
-    } finally {
-      setSaving(false)
+      setStatus({ type: 'error', message: 'Failed to update governance rules.' })
     }
   }
 
-  if (loading) return <div className="p-8 flex justify-center items-center h-full"><Loader2 className="animate-spin text-blue-500" size={32} /></div>
-
   return (
-    <div className="p-8 space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
-      <header className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight">Rule Engine</h2>
-        <p className="text-[#94a3b8] mt-1">Configure your risk guardrails. Trades violating these will be blocked.</p>
+    <div className="flex flex-col h-full bg-white">
+      <header className="p-6 lg:p-12 border-b border-alabaster-border">
+        <h2 className="text-3xl lg:text-5xl font-black text-alabaster-deep uppercase">Rule Engine</h2>
+        <p className="text-[10px] lg:text-[12px] text-alabaster-muted mt-2 font-bold tracking-[0.2em] uppercase">Governance & Guardrails</p>
       </header>
 
-      {status && (
-        <div className={`p-4 rounded-lg flex items-center space-x-3 ${status.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
-          <ShieldCheck />
-          <span>{status.message}</span>
-        </div>
-      )}
+      <div className="flex-1 overflow-y-auto p-6 md:p-12 max-w-5xl">
+        {status && (
+          <div className={`p-6 mb-8 border flex items-center space-x-4 ${status.type === 'success' ? 'bg-green-50/30 border-green-100 text-green-700' : 'bg-red-50/30 border-red-100 text-red-700'}`}>
+            <ShieldCheck size={20} />
+            <span className="text-xs font-bold uppercase tracking-tight">{status.message}</span>
+          </div>
+        )}
 
-      <div className="glass-card rounded-xl p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#94a3b8]">Max Trades Per Day</label>
-              <input type="number" name="max_trades" value={form.max_trades} onChange={handleChange} className="w-full bg-[#0f1115] border border-[#1e293b] rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-              <p className="text-xs text-[#64748b]">Prevents overtrading</p>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#94a3b8]">Max Daily Loss ($)</label>
-              <input type="number" step="0.01" name="max_daily_loss" value={form.max_daily_loss} onChange={handleChange} className="w-full bg-[#0f1115] border border-[#1e293b] rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-              <p className="text-xs text-[#64748b]">Hard stop for daily drawdowns</p>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <RuleField label="Max Daily Trades" hint="Hard limit for transaction sequences per 24h">
+              <input type="number" name="max_trades" value={form.max_trades} onChange={handleChange} className="w-full bg-white border border-alabaster-border p-4 text-sm font-bold text-alabaster-deep focus:outline-none focus:border-alabaster-deep transition-all rounded-none" />
+            </RuleField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#94a3b8]">Risk Per Trade (%)</label>
-              <input type="number" step="0.1" name="risk_percentage" value={form.risk_percentage} onChange={handleChange} className="w-full bg-[#0f1115] border border-[#1e293b] rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-              <p className="text-xs text-[#64748b]">Capital at risk per trade</p>
-            </div>
+            <RuleField label="Max Daily Loss ($)" hint="Session termination threshold">
+              <input type="number" name="max_daily_loss" value={form.max_daily_loss} onChange={handleChange} className="w-full bg-white border border-alabaster-border p-4 text-sm font-bold text-alabaster-deep focus:outline-none focus:border-alabaster-deep transition-all rounded-none" />
+            </RuleField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#94a3b8]">Minimum Risk:Reward Ratio</label>
-              <input type="number" step="0.1" name="rr_ratio" value={form.rr_ratio} onChange={handleChange} className="w-full bg-[#0f1115] border border-[#1e293b] rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-              <p className="text-xs text-[#64748b]">E.g., 2.0 means every trade must aim for 1:2</p>
-            </div>
+            <RuleField label="Risk Per Trade (%)" hint="Lot size calculation basis">
+              <input type="number" step="0.1" name="risk_percentage" value={form.risk_percentage} onChange={handleChange} className="w-full bg-white border border-alabaster-border p-4 text-sm font-bold text-alabaster-deep focus:outline-none focus:border-alabaster-deep transition-all rounded-none" />
+            </RuleField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#94a3b8]">Cooldown After Loss (Mins)</label>
-              <input type="number" name="cooldown_minutes" value={form.cooldown_minutes} onChange={handleChange} className="w-full bg-[#0f1115] border border-[#1e293b] rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-              <p className="text-xs text-[#64748b]">Protects against emotional revenge trading</p>
-            </div>
+            <RuleField label="Min R:R Ratio" hint="Minimum allowed risk-to-reward for execution">
+              <input type="number" step="0.1" name="rr_ratio" value={form.rr_ratio} onChange={handleChange} className="w-full bg-white border border-alabaster-border p-4 text-sm font-bold text-alabaster-deep focus:outline-none focus:border-alabaster-deep transition-all rounded-none" />
+            </RuleField>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#94a3b8]">Max Open Positions</label>
-              <input type="number" name="max_open_positions" value={form.max_open_positions} onChange={handleChange} className="w-full bg-[#0f1115] border border-[#1e293b] rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 transition-colors" />
-              <p className="text-xs text-[#64748b]">Limits exposure at any given time</p>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-[#0f1115] border border-[#1e293b] rounded-lg">
-              <div>
-                <label className="text-sm font-medium text-[#f8fafc]">Revenge Trading Guard</label>
-                <p className="text-xs text-[#94a3b8]">Blocks trading immediately after a loss</p>
+            <RuleField label="Revenge Trading Block" hint="Prevent immediate re-entry after stop-out">
+              <div className="flex items-center space-x-4 pt-2">
+                <input 
+                  type="checkbox" 
+                  name="revenge_trading_block" 
+                  checked={form.revenge_trading_block} 
+                  onChange={handleChange} 
+                  className="w-8 h-8 accent-[#111111] cursor-pointer border-alabaster-border" 
+                />
+                <span className="text-[10px] font-black uppercase text-alabaster-deep tracking-widest">{form.revenge_trading_block ? 'ENFORCED' : 'DISABLED'}</span>
               </div>
-              <input type="checkbox" name="revenge_trading_block" checked={form.revenge_trading_block} onChange={handleChange} className="w-6 h-6 rounded border-[#1e293b] bg-blue-600 focus:ring-blue-500" />
-            </div>
+            </RuleField>
+
+            <RuleField label="Protocol Cooldown (Min)" hint="Minimum delay between trade clusters">
+              <input type="number" name="cooldown_minutes" value={form.cooldown_minutes} onChange={handleChange} className="w-full bg-white border border-alabaster-border p-4 text-sm font-bold text-alabaster-deep focus:outline-none focus:border-alabaster-deep transition-all rounded-none" />
+            </RuleField>
           </div>
 
-          <button type="submit" disabled={saving} className="w-full py-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-bold transition-colors shadow-lg shadow-purple-500/20 flex items-center justify-center space-x-2 mt-4">
-            {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-            <span>Save Rules</span>
-          </button>
+          <MagButton type="submit" className="w-full md:w-auto">
+            Update Governance Protocol
+          </MagButton>
         </form>
       </div>
+    </div>
+  )
+}
+
+function RuleField({ label, children, hint }) {
+  return (
+    <div className="space-y-3">
+      <label className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase">{label}</label>
+      {children}
+      <p className="text-[9px] text-alabaster-muted font-bold uppercase tracking-tight">{hint}</p>
     </div>
   )
 }

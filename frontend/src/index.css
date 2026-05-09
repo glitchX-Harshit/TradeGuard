@@ -1,33 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 :root {
-  --bg-dark: #0b0d10;
-  --bg-card: #15181e;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --accent-blue: #2563eb;
-  --accent-red: #e11d48;
-  --accent-green: #10b981;
-  --border-color: #1e293b;
+  --alabaster-white: #FFFFFF;
+  --alabaster-surface: #F9F9F9;
+  --alabaster-border: #E9ECEF;
+  --alabaster-muted: #6C757D;
+  --alabaster-deep: #111111;
 }
 
 body {
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--alabaster-white);
+  color: var(--alabaster-deep);
+  font-family: 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Glassmorphism for Alabaster */
 .glass-card {
-  background: rgba(21, 24, 30, 0.7);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--alabaster-border);
 }
 
-.gradient-text {
-  background: linear-gradient(to right, #60a5fa, #3b82f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.surgical-metric {
+  letter-spacing: -0.05em;
+  font-weight: 900;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--alabaster-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--alabaster-border);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--alabaster-muted);
 }

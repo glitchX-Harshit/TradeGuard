@@ -1,53 +1,57 @@
 import { useQuery } from '@tanstack/react-query'
 import { getViolations } from '../services/api'
-import { AlertOctagon, Clock } from 'lucide-react'
+import { AlertOctagon, Clock, ShieldCheck } from 'lucide-react'
 
 export default function Violations() {
   const { data, isLoading } = useQuery({ queryKey: ['violations'], queryFn: getViolations, refetchInterval: 3000 })
   const violations = data?.data || []
 
   return (
-    <div className="p-8 space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto">
-      <header className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight text-red-500">Warning Center</h2>
-        <p className="text-[#94a3b8] mt-1">Review blocked trades and discipline infractions.</p>
+    <div className="flex flex-col h-full bg-white">
+      <header className="p-6 md:p-12 border-b border-alabaster-border">
+        <h2 className="text-3xl lg:text-5xl font-black text-red-600 uppercase">Warning Center</h2>
+        <p className="text-[10px] lg:text-[12px] text-alabaster-muted mt-2 font-bold tracking-[0.2em] uppercase">Discipline Infractions</p>
       </header>
 
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 md:p-12">
         {isLoading ? (
-          <div className="text-[#94a3b8] text-center p-8">Loading violations...</div>
+          <div className="text-alabaster-muted text-[10px] font-black uppercase tracking-widest text-center py-20">Analyzing Signal Stream...</div>
         ) : violations.length === 0 ? (
-          <div className="glass-card p-12 text-center rounded-xl flex flex-col items-center">
-            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
-              <Clock className="text-green-500" size={32} />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Clean Record</h3>
-            <p className="text-[#94a3b8]">You have no trading violations. Keep up the good discipline!</p>
+          <div className="p-20 text-center border border-alabaster-border rounded flex flex-col items-center max-w-2xl mx-auto">
+            <ShieldCheck size={48} className="text-green-500 mb-6" strokeWidth={1} />
+            <h3 className="text-xs font-black text-alabaster-deep uppercase tracking-[0.3em] mb-2">Pristine Discipline</h3>
+            <p className="text-[10px] text-alabaster-muted font-bold uppercase">No governance breaches detected in the current session.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-12 gap-1 border-t border-l border-alabaster-border">
             {violations.map((v, i) => (
-              <div key={i} className="glass-card p-6 rounded-xl border-l-4 border-l-red-500 hover:bg-white/5 transition-colors relative overflow-hidden group">
-                <div className="flex items-start justify-between mb-4 relative">
-                  <div className="p-2 bg-red-500/10 rounded-lg">
-                    <AlertOctagon className="text-red-500" size={24} />
-                  </div>
-                  <span className="text-xs font-medium text-[#64748b] bg-[#0f1115] px-2 py-1 rounded">
-                    {new Date(v.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                  </span>
-                </div>
-                <div className="relative">
-                  <h4 className="font-bold text-white mb-1 text-lg">{v.violation_type}</h4>
-                  <p className="text-sm text-[#94a3b8] leading-relaxed">{v.reason}</p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-[#1e293b] flex items-center text-xs text-[#64748b]">
-                  <Clock size={12} className="mr-1" />
-                  {new Date(v.timestamp).toLocaleDateString()}
-                </div>
-              </div>
+              <ViolationCard key={i} violation={v} />
             ))}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function ViolationCard({ violation }) {
+  return (
+    <div className="col-span-12 md:col-span-6 lg:col-span-4 p-8 border-r border-b border-alabaster-border hover:bg-red-50/20 transition-all group">
+      <div className="flex justify-between items-start mb-6">
+        <div className="p-2 border border-red-100 bg-red-50/50 rounded">
+          <AlertOctagon size={18} className="text-red-500" />
+        </div>
+        <span className="text-[9px] font-black text-alabaster-muted uppercase tracking-tighter">
+          {new Date(violation.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+        </span>
+      </div>
+      
+      <h4 className="text-[10px] font-black text-red-600 uppercase tracking-[0.2em] mb-2">{violation.violation_type}</h4>
+      <p className="text-xs font-bold text-alabaster-deep uppercase leading-relaxed mb-8">{violation.reason}</p>
+      
+      <div className="flex items-center space-x-2 text-[9px] font-black text-alabaster-muted uppercase">
+        <Clock size={12} />
+        <span>{new Date(violation.timestamp).toLocaleDateString()}</span>
       </div>
     </div>
   )

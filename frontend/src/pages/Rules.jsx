@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { getRules, updateRules } from '../services/api'
-import { ShieldCheck, AlertCircle, Save } from 'lucide-react'
+import { getRules, updateRules, resetGovernance } from '../services/api'
+import { ShieldCheck, AlertCircle, Save, RotateCcw } from 'lucide-react'
 import MagButton from '../components/MagButton'
 
 export default function Rules() {
@@ -14,6 +14,7 @@ export default function Rules() {
     revenge_trading_block: true
   })
   const [status, setStatus] = useState(null)
+  const [resetting, setResetting] = useState(false)
 
   useEffect(() => {
     getRules().then(res => setForm(res.data))
@@ -31,6 +32,20 @@ export default function Rules() {
       setStatus({ type: 'success', message: 'Rules updated successfully. Protection active.' })
     } catch (err) {
       setStatus({ type: 'error', message: 'Failed to update governance rules.' })
+    }
+  }
+
+  const handleReset = async () => {
+    if (!window.confirm("Are you sure you want to reset all violations and trade limits? This will clear your daily history.")) return;
+    
+    setResetting(true)
+    try {
+      await resetGovernance()
+      setStatus({ type: 'success', message: 'Governance and trade limits reset successfully.' })
+    } catch (err) {
+      setStatus({ type: 'error', message: 'Failed to reset governance.' })
+    } finally {
+      setResetting(false)
     }
   }
 
@@ -89,6 +104,24 @@ export default function Rules() {
             Update Governance Protocol
           </MagButton>
         </form>
+
+        <div className="mt-24 pt-12 border-t border-alabaster-border">
+          <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-red-600 mb-6 flex items-center">
+            <RotateCcw size={14} className="mr-2" /> Emergency Reset Zone
+          </h3>
+          <div className="p-8 border border-red-100 bg-red-50/20">
+            <p className="text-[10px] font-bold text-alabaster-muted uppercase tracking-widest mb-6 leading-relaxed">
+              Resets all active violations, trade counters, and daily limits. Use this to bypass the governance engine if a hard-lock occurs during a critical session.
+            </p>
+            <button 
+              onClick={handleReset}
+              disabled={resetting}
+              className="px-8 py-4 bg-red-600 text-white text-[10px] font-black tracking-[0.2em] uppercase hover:bg-red-700 transition-all disabled:opacity-50"
+            >
+              {resetting ? 'Resetting...' : 'Initiate Full Governance Reset'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )

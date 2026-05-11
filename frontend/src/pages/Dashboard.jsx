@@ -1,10 +1,19 @@
-import { useQuery } from '@tanstack/react-query'
-import { getDashboardSummary, getTradeHistory } from '../services/api'
-import { Wallet, Activity, ShieldCheck, TrendingUp, TrendingDown, Clock, AlertTriangle } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getDashboardSummary, getTradeHistory, closeTrade } from '../services/api'
+import { Wallet, Activity, ShieldCheck, TrendingUp, TrendingDown, Clock, AlertTriangle, X } from 'lucide-react'
 
 export default function Dashboard() {
   const { data: summary } = useQuery({ queryKey: ['dashboard'], queryFn: getDashboardSummary, refetchInterval: 2000 })
   const { data: history } = useQuery({ queryKey: ['trades'], queryFn: getTradeHistory, refetchInterval: 2000 })
+
+  const queryClient = useQueryClient()
+  const closeMutation = useMutation({
+    mutationFn: (ticket) => closeTrade(ticket),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['trades'] })
+    }
+  })
 
   const stats = summary?.data || { balance: 0, equity: 0, margin: 0, profit: 0, open_trades_count: 0, violations_count: 0, discipline_score: 100 }
   const trades = history?.data || []
@@ -54,7 +63,12 @@ export default function Dashboard() {
                   <div className="py-20 text-center border border-dashed border-alabaster-border text-[10px] font-bold text-alabaster-muted uppercase">Waiting for protocol execution...</div>
                 ) : (
                   trades.slice(0, 10).map((trade, i) => (
-                    <TradeRow key={i} trade={trade} />
+                    <TradeRow 
+                      key={i} 
+                      trade={trade} 
+                      onClose={closeMutation.mutate} 
+                      isClosing={closeMutation.isPending && closeMutation.variables === trade.ticket}
+                    />
                   ))
                 )}
               </div>
@@ -121,7 +135,7 @@ function SmallMetricBlock({ title, value, color = "text-alabaster-deep" }) {
   )
 }
 
-function TradeRow({ trade }) {
+function TradeRow({ trade, onClose, isClosing }) {
   return (
     <div className="flex items-center justify-between p-4 border border-alabaster-border hover:border-alabaster-deep transition-all group">
       <div className="flex items-center space-x-6">
@@ -132,12 +146,24 @@ function TradeRow({ trade }) {
         </div>
       </div>
       <div className="flex items-center space-x-12">
-        <div className="text-right">
-          <p className="text-[10px] font-black uppercase text-alabaster-deep">{trade.status}</p>
-          <div className="flex items-center text-[9px] font-bold text-alabaster-muted uppercase">
-            <Clock size={10} className="mr-1" />
-            {new Date(trade.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+        <div className="text-right flex items-center space-x-4">
+          <div>
+            <p className="text-[10px] font-black uppercase text-alabaster-deep">{trade.status}</p>
+            <div className="flex items-center text-[9px] font-bold text-alabaster-muted uppercase">
+              <Clock size={10} className="mr-1" />
+              {new Date(trade.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+            </div>
           </div>
+          {trade.status === 'OPEN' && (
+            <button 
+              onClick={() => onClose(trade.ticket)}
+              disabled={isClosing}
+              className="p-2 border border-red-200 text-red-500 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+              title="Close Trade"
+            >
+              {isClosing ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <X size={14} />}
+            </button>
+          )}
         </div>
       </div>
     </div>

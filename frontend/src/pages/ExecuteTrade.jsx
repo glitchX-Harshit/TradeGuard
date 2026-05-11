@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { executeTrade } from '../services/api'
-import { AlertCircle, CheckCircle2, TrendingUp, TrendingDown } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { executeTrade, getSymbolInfo } from '../services/api'
+import { AlertCircle, CheckCircle2, TrendingUp, TrendingDown, Crosshair, Target } from 'lucide-react'
 import MagButton from '../components/MagButton'
 import CustomSelect from '../components/CustomSelect'
 
@@ -12,8 +12,31 @@ export default function ExecuteTrade() {
     risk_reward_ratio: 2.0,
     stop_loss_pips: 20
   })
+  const [symbolData, setSymbolData] = useState({
+    price: 1.1000,
+    digits: 5,
+    pip_size: 0.0001,
+    tick_size: 0.00001
+  })
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(false)
+
+  // Fetch symbol info on mount and when symbol changes
+  useEffect(() => {
+    let interval;
+    const fetchInfo = async () => {
+      try {
+        const res = await getSymbolInfo(form.symbol);
+        setSymbolData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch symbol info", err);
+      }
+    };
+
+    fetchInfo();
+    interval = setInterval(fetchInfo, 5000); // Update price every 5s
+    return () => clearInterval(interval);
+  }, [form.symbol]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -35,6 +58,18 @@ export default function ExecuteTrade() {
       setLoading(false)
     }
   }
+
+  // Preview Calculations
+  const slDistance = form.stop_loss_pips * symbolData.pip_size;
+  const tpDistance = slDistance * form.risk_reward_ratio;
+  
+  const calculatedSL = form.order_type === 'BUY' 
+    ? (symbolData.price - slDistance).toFixed(symbolData.digits)
+    : (symbolData.price + slDistance).toFixed(symbolData.digits);
+
+  const calculatedTP = form.order_type === 'BUY'
+    ? (symbolData.price + tpDistance).toFixed(symbolData.digits)
+    : (symbolData.price - tpDistance).toFixed(symbolData.digits);
 
   const tpPips = form.stop_loss_pips * form.risk_reward_ratio
 
@@ -103,14 +138,26 @@ export default function ExecuteTrade() {
               </FormField>
             </div>
 
-            <div className="p-8 md:p-12 border border-alabaster-border bg-alabaster-surface/30 flex flex-col md:flex-row justify-between items-start md:items-center space-y-8 md:space-y-0">
+            <div className="p-8 md:p-12 border border-alabaster-border bg-alabaster-surface/30 grid grid-cols-1 md:grid-cols-3 gap-8">
               <div>
-                <p className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase mb-4">Calculated Target</p>
-                <p className="text-2xl md:text-3xl surgical-metric text-alabaster-deep">Take Profit: <span className="font-black">{tpPips} Pips</span></p>
+                <p className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase mb-4 flex items-center">
+                  <TrendingUp size={12} className="mr-2" /> Live Market Entry
+                </p>
+                <p className="text-2xl font-black text-alabaster-deep surgical-metric">{symbolData.price.toFixed(symbolData.digits)}</p>
               </div>
-              <div className="text-left md:text-right">
-                <p className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase mb-4">Efficiency</p>
-                <p className="text-xl md:text-2xl font-black text-alabaster-deep">1:{form.risk_reward_ratio}</p>
+              <div>
+                <p className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase mb-4 flex items-center">
+                  <Crosshair size={12} className="mr-2" /> Calculated SL
+                </p>
+                <p className="text-2xl font-black text-red-600 surgical-metric">{calculatedSL}</p>
+                <p className="text-[9px] font-bold text-alabaster-muted mt-1 uppercase">{form.stop_loss_pips} PIPS DISTANCE</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase mb-4 flex items-center">
+                  <Target size={12} className="mr-2" /> Calculated TP
+                </p>
+                <p className="text-2xl font-black text-green-600 surgical-metric">{calculatedTP}</p>
+                <p className="text-[9px] font-bold text-alabaster-muted mt-1 uppercase">{tpPips} PIPS DISTANCE (1:{form.risk_reward_ratio})</p>
               </div>
             </div>
 
@@ -120,6 +167,15 @@ export default function ExecuteTrade() {
           </form>
 
           <div className="lg:col-span-4 space-y-8">
+            <div className="p-8 border border-alabaster-border bg-alabaster-surface/10">
+              <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-alabaster-deep mb-6">Execution Specs</h3>
+              <div className="space-y-4">
+                <SpecItem label="Digits" value={symbolData.digits} />
+                <SpecItem label="Pip Size" value={symbolData.pip_size} />
+                <SpecItem label="Tick Size" value={symbolData.tick_size} />
+              </div>
+            </div>
+            
             <div className="p-8 border border-alabaster-border">
               <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-alabaster-deep mb-6">Safety Brief</h3>
               <ul className="space-y-6">
@@ -140,6 +196,15 @@ function FormField({ label, children, className = "" }) {
     <div className={`space-y-3 ${className}`}>
       <label className="text-[10px] font-black tracking-[0.2em] text-alabaster-muted uppercase">{label}</label>
       {children}
+    </div>
+  )
+}
+
+function SpecItem({ label, value }) {
+  return (
+    <div className="flex justify-between border-b border-dashed border-alabaster-border pb-2">
+      <span className="text-[9px] font-bold text-alabaster-muted uppercase">{label}</span>
+      <span className="text-[10px] font-black text-alabaster-deep">{value}</span>
     </div>
   )
 }

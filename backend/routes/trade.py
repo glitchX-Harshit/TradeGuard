@@ -30,26 +30,22 @@ def execute_trade(req: schemas.TradeExecutionRequest, db: Session = Depends(get_
         db.refresh(trade)
         raise HTTPException(status_code=400, detail=validation["reason"])
     
-    symbol_info = mt5.symbol_info(req.symbol) if mt5_service.connected else None
-    
-    if symbol_info:
-        point = symbol_info.point
-        pip_multiplier = 10 * point if symbol_info.digits in [3, 5] else point
-    else:
-        # Fallback for when MT5 is not connected (demo/simulation mode)
-        pip_multiplier = 0.0001
-
-    pips_val = req.stop_loss_pips * pip_multiplier
-    tp_pips_val = (req.stop_loss_pips * req.risk_reward_ratio) * pip_multiplier
-    
     current_price = mt5_service.get_market_price(req.symbol, req.order_type)
+    pip_size = mt5_service.calculate_pip_value(req.symbol)
+    
+    sl_distance = req.stop_loss_pips * pip_size
+    tp_distance = (req.stop_loss_pips * req.risk_reward_ratio) * pip_size
     
     if req.order_type == "BUY":
-        sl_price = current_price - pips_val
-        tp_price = current_price + tp_pips_val
+        sl_price = current_price - sl_distance
+        tp_price = current_price + tp_distance
     else:
-        sl_price = current_price + pips_val
-        tp_price = current_price - tp_pips_val
+        sl_price = current_price + sl_distance
+        tp_price = current_price - tp_distance
+    
+    # Final normalization before sending to execution
+    sl_price = mt5_service.normalize_price(req.symbol, sl_price)
+    tp_price = mt5_service.normalize_price(req.symbol, tp_price)
         
     result = mt5_service.execute_trade(req.symbol, req.order_type, req.lot_size, sl_price, tp_price)
     
@@ -79,3 +75,44 @@ def trade_history(db: Session = Depends(get_db)):
 @router.get("/open-trades", response_model=List[schemas.TradeResponse])
 def open_trades(db: Session = Depends(get_db)):
     return db.query(models.Trade).filter(models.Trade.status == "OPEN").all()
+
+@router.get("/symbol-info/{symbol}")
+def get_symbol_info(symbol: str):
+    if not mt5_service.connected:
+        return {
+            "price": 1.1000,
+            "digits": 5,
+            "pip_size": 0.0001,
+            "tick_size": 0.00001
+        }
+    
+    info = mt5_service.get_symbol_info(symbol)
+    if not info:
+        raise HTTPException(status_code=404, detail="Symbol not found")
+    
+    tick = mt5.symbol_info_tick(symbol)
+    price = tick.ask if tick else 1.1000
+    
+    return {
+        "price": price,
+        "digits": info.digits,
+        "pip_size": mt5_service.calculate_pip_value(symbol),
+        "tick_size": info.trade_tick_size
+    }
+
+@router.post("/close-trade/{ticket}")
+def close_trade(ticket: int, db: Session = Depends(get_db)):
+    # 1. Close in MT5
+    result = mt5_service.close_trade(ticket)
+    
+    if not result["success"]:
+        raise HTTPException(status_code=400, detail=result["message"])
+    
+    # 2. Update in DB
+    trade = db.query(models.Trade).filter(models.Trade.ticket == ticket).first()
+    if trade:
+        trade.status = "CLOSED"
+        trade.exit_price = result.get("price", 0.0) # We might want to get the actual exit price from result
+        db.commit()
+    
+    return result

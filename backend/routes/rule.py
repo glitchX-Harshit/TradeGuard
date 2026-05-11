@@ -49,3 +49,12 @@ def get_rules(db: Session = Depends(get_db)):
         db.commit()
         db.refresh(rule)
     return rule
+
+@router.post("/reset-governance")
+def reset_governance(db: Session = Depends(get_db)):
+    # Clear all violations
+    db.query(models.Violation).delete()
+    # Clear all trade history to reset daily limits
+    db.query(models.Trade).delete()
+    db.commit()
+    return {"message": "Governance and trade limits have been reset successfully."}

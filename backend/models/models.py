@@ -40,3 +40,20 @@ class Violation(Base):
     violation_type = Column(String)
     reason = Column(String)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class AIJournalEntry(Base):
+    __tablename__ = "ai_journal_entries"
+    id = Column(Integer, primary_key=True, index=True)
+    entry_type = Column(String) # trade_reflection, daily_summary, coaching_insight
+    content = Column(String)
+    severity = Column(String) # info, warning, critical
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class BehavioralPattern(Base):
+    __tablename__ = "behavioral_patterns"
+    id = Column(Integer, primary_key=True, index=True)
+    pattern_type = Column(String) # overtrading, revenge_trading, fear_based_trading, impulsive, poor_risk
+    confidence = Column(Float)
+    explanation = Column(String)
+    recommendation = Column(String)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())

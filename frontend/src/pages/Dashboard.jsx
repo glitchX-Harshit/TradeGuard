@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getDashboardSummary, getTradeHistory, closeTrade } from '../services/api'
-import { Wallet, Activity, ShieldCheck, TrendingUp, TrendingDown, Clock, AlertTriangle, X } from 'lucide-react'
+import { Wallet, Activity, ShieldCheck, TrendingUp, TrendingDown, Clock, AlertTriangle, X, Brain } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function Dashboard() {
   const { data: summary } = useQuery({ queryKey: ['dashboard'], queryFn: getDashboardSummary, refetchInterval: 2000 })
@@ -85,6 +86,19 @@ export default function Dashboard() {
                 <p className="text-[9px] font-black text-alabaster-muted uppercase mt-2">Active Risk Delta</p>
               </IntelligenceSection>
 
+              <IntelligenceSection title="AI Intelligence">
+                <div className="bg-black text-white p-8 relative overflow-hidden group">
+                  <Brain className="absolute -right-4 -bottom-4 text-white/10 group-hover:scale-110 transition-transform" size={80} />
+                  <p className="text-[9px] font-black uppercase tracking-widest mb-2 opacity-60">Behavioral Coach</p>
+                  <p className="text-sm font-bold leading-relaxed relative z-10 mb-6">
+                    "Detecting market entry patterns. Your discipline score is holding stable at {stats.discipline_score}%."
+                  </p>
+                  <Link to="/ai-coach" className="inline-block text-[9px] font-black uppercase tracking-[0.2em] border-b border-white/40 pb-1 hover:border-white transition-colors relative z-10">
+                    Open Intelligence Center
+                  </Link>
+                </div>
+              </IntelligenceSection>
+
               <IntelligenceSection title="Discipline Infractions">
                 <div className="flex items-center space-x-3">
                   <div className={`w-12 h-12 flex items-center justify-center border ${stats.violations_count > 0 ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'}`}>
@@ -112,7 +126,6 @@ export default function Dashboard() {
     </div>
   )
 }
-
 function MetricBlock({ title, value, subValue, trend }) {
   return (
     <div className="p-12 group hover:bg-alabaster-surface transition-colors border-r border-alabaster-border last:border-r-0">

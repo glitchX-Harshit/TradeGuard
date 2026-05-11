@@ -24,4 +24,11 @@ export const resetGovernance = () => api.post('/reset-governance');
 export const getDashboardSummary = () => api.get('/dashboard-summary');
 export const getViolations = () => api.get('/violations');
 
+// AI Journal & Coaching
+export const getJournalEntries = () => api.get('/journal/entries');
+export const getBehavioralPatterns = () => api.get('/journal/patterns');
+export const getDisciplineScore = () => api.get('/journal/discipline-score');
+export const analyzeBehaviorNow = () => api.post('/journal/analyze-now');
+export const sendAIChatMessage = (message) => api.post('/journal/chat', { message });
+
 export default api;

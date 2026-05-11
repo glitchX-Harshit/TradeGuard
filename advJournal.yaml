@@ -1,0 +1,325 @@
+role: "Senior AI Product Architect & Behavioral Trading Intelligence Engineer"
+
+goal: >
+  Integrate an advanced AI-powered Behavioral Trading Journal
+  into the existing TradeGuard AI platform.
+
+  The system should NOT be a generic diary journal.
+  It must function as:
+    - a behavioral analysis engine
+    - a trading psychology detector
+    - an AI trading coach
+    - a performance intelligence system
+
+core_vision: >
+  Build a system that analyzes trader behavior automatically
+  using trade history, violations, execution patterns, risk behavior,
+  and emotional indicators inferred from trading actions.
+
+  The AI should:
+    - detect behavioral weaknesses
+    - explain performance problems
+    - identify discipline patterns
+    - coach the trader conversationally
+
+important_instruction: >
+  DO NOT build:
+    - a basic text journal
+    - mood tracking app
+    - generic GPT wrapper
+
+  Instead:
+    - derive psychology from trading behavior
+    - generate intelligent coaching insights
+    - create system-generated reflections automatically
+
+architecture:
+
+  frontend:
+    framework: "React"
+    ui_style: "current ui"
+
+  backend:
+    framework: "FastAPI"
+
+  ai_engine:
+    service_file: "journal_service.py"
+
+  database:
+    required_tables:
+      - trades
+      - violations
+      - ai_journal_entries
+      - behavioral_patterns
+
+feature_modules:
+
+  module_1_behavior_engine:
+
+    objective: >
+      Analyze raw trade behavior and detect psychological patterns.
+
+    input_data:
+      - trade history
+      - trade frequency
+      - lot size changes
+      - loss streaks
+      - RR ratio consistency
+      - violations
+      - trade duration
+      - risk percentage
+      - SL/TP consistency
+
+    required_behavior_detection:
+
+      overtrading:
+        detect_when:
+          - too many trades in short time
+          - frequent entries after losses
+
+      revenge_trading:
+        detect_when:
+          - increased lot size after losses
+          - rapid consecutive entries
+
+      fear_based_trading:
+        detect_when:
+          - closing winners early
+          - inconsistent TP behavior
+
+      poor_risk_management:
+        detect_when:
+          - SL missing
+          - RR ratio too low
+          - risk percentage exceeded
+
+      impulsive_behavior:
+        detect_when:
+          - multiple rule violations
+          - random symbol switching
+
+    output_format:
+      - behavior_type
+      - severity
+      - explanation
+      - recommendation
+
+module_2_ai_insight_generator:
+
+  objective: >
+    Generate intelligent reflections automatically after trades
+    and after trading sessions.
+
+  required_outputs:
+
+    daily_summary:
+      example: >
+        "You followed your RR rules consistently today,
+        but your trade frequency increased significantly
+        after your second loss."
+
+    weakness_analysis:
+      example: >
+        "Your recent trades suggest emotional recovery behavior
+        after losing positions."
+
+    strength_analysis:
+      example: >
+        "You maintained disciplined stop loss placement
+        across most trades."
+
+    coaching_tip:
+      example: >
+        "Reduce trade frequency after consecutive losses
+        to avoid revenge trading."
+
+module_3_ai_chat_coach:
+
+  objective: >
+    Create a conversational AI coach that answers questions
+    using the user's trading behavior and analytics.
+
+  required_endpoint:
+    - POST /ai-chat
+
+  supported_questions:
+    - "Why am I losing?"
+    - "What is my biggest weakness?"
+    - "How disciplined am I?"
+    - "Did I improve this week?"
+    - "What emotional patterns do I show?"
+
+  ai_context_sources:
+    - trades
+    - violations
+    - discipline score
+    - behavior patterns
+    - analytics
+
+  response_style:
+    - analytical
+    - professional
+    - coaching-oriented
+    - non-generic
+
+module_4_trade_reflection_system:
+
+  objective: >
+    Generate AI reflections automatically after every trade.
+
+  required_behavior:
+
+    after_trade_execution:
+      generate:
+        - what was done correctly
+        - what was risky
+        - rule adherence analysis
+        - emotional risk indicators
+
+  example_output:
+    good:
+      - "You respected your predefined risk percentage."
+
+    bad:
+      - "Your RR ratio was below your configured discipline threshold."
+
+module_5_discipline_score_engine:
+
+  objective: >
+    Create a dynamic discipline score based on behavior.
+
+  score_range:
+    min: 0
+    max: 100
+
+  scoring_factors:
+    positive:
+      - following RR ratio
+      - consistent SL usage
+      - low violations
+      - controlled trade frequency
+
+    negative:
+      - overtrading
+      - revenge trading
+      - missing stop loss
+      - excessive risk
+      - repeated violations
+
+  required_output:
+    - current score
+    - trend
+    - reason for score changes
+
+module_6_database_layer:
+
+  required_tables:
+
+    ai_journal_entries:
+      fields:
+        - id
+        - entry_type
+        - content
+        - severity
+        - created_at
+
+    behavioral_patterns:
+      fields:
+        - id
+        - pattern_type
+        - confidence
+        - explanation
+        - timestamp
+
+frontend_requirements:
+
+  new_pages:
+
+    ai_coach_dashboard:
+      sections:
+        - behavior analysis cards
+        - strengths
+        - weaknesses
+        - coaching insights
+        - discipline score
+        - AI reflections
+
+    ai_chat_page:
+      sections:
+        - conversational coach UI
+        - previous insights
+        - quick question suggestions
+
+  ui_style:
+    - modern fintech
+    - minimal dark theme
+    - premium analytics cards
+    - smooth UX
+    - glassmorphism allowed lightly
+
+dashboard_widgets:
+
+  required_widgets:
+    - discipline score card
+    - emotional risk meter
+    - violation trend
+    - trading consistency graph
+    - AI insight feed
+
+integration_pipeline:
+
+  required_flow:
+    - trade executes
+    - trade saved
+    - behavior engine analyzes
+    - patterns detected
+    - AI reflection generated
+    - discipline score updated
+    - frontend dashboard refreshed
+
+backend_services:
+
+  required_files:
+    - journal_service.py
+    - behavior_engine.py
+    - ai_chat_service.py
+    - discipline_service.py
+
+skip_logic:
+
+  instruction: >
+    If existing modules already work correctly:
+      - DO NOT overwrite them
+      - ONLY integrate missing AI journal systems
+
+constraints:
+  - avoid fake motivational text
+  - avoid generic journaling
+  - keep insights data-driven
+  - avoid overengineering
+  - prioritize meaningful behavioral analysis
+
+success_criteria:
+
+  ai_behavior:
+    - detects overtrading
+    - detects revenge trading
+    - detects fear-based exits
+    - detects risk inconsistency
+
+  frontend:
+    - AI coach feels premium
+    - insights update dynamically
+    - discipline score visible
+
+  user_experience:
+    - feels like intelligent trading coach
+    - not like basic chatbot
+    - psychologically insightful
+
+final_product_feel:
+  - fintech SaaS
+  - behavioral intelligence platform
+  - trading performance coach
+
+tone: "behavioral-fintech intelligence engineering"

@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+backend/venv/
+backend/__pycache__/
+backend/tradeguard.db
+__pycache__/
+*.pyc
+
+# Environment
+.env
+backend/.env
+
+# Node
+node_modules/
+frontend/node_modules/
+dist/

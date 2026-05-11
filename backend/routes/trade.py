@@ -7,6 +7,8 @@ from database.database import get_db
 from models import models
 from services.mt5_service import mt5_service
 from services.rule_engine import RuleEngine
+from services.journal_service import JournalService
+from services.behavior_engine import BehaviorEngine
 
 router = APIRouter()
 
@@ -28,6 +30,11 @@ def execute_trade(req: schemas.TradeExecutionRequest, db: Session = Depends(get_
         db.add(trade)
         db.commit()
         db.refresh(trade)
+        
+        # Log violation if it was a rejection
+        journal = JournalService(db)
+        journal.generate_daily_summary() # Update summary to reflect rejection
+        
         raise HTTPException(status_code=400, detail=validation["reason"])
     
     current_price = mt5_service.get_market_price(req.symbol, req.order_type)
@@ -65,6 +72,13 @@ def execute_trade(req: schemas.TradeExecutionRequest, db: Session = Depends(get_
     db.add(trade)
     db.commit()
     db.refresh(trade)
+    
+    # Analyze behavior and generate initial reflection
+    engine = BehaviorEngine(db)
+    engine.analyze_behavior()
+    
+    journal = JournalService(db)
+    journal.generate_trade_reflection(trade.id)
     
     return trade
 

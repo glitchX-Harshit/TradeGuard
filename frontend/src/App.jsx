@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Shield, AlertTriangle, Activity, Server, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Shield, AlertTriangle, Activity, Server, Menu, X, Brain, MessageSquare } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import ExecuteTrade from './pages/ExecuteTrade'
 import Rules from './pages/Rules'
 import Violations from './pages/Violations'
 import Connect from './pages/Connect'
+import AICoach from './pages/AICoach'
+import AIChat from './pages/AIChat'
 
 function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -33,6 +35,8 @@ function App() {
           <nav className="flex-1 p-6 lg:p-0 lg:py-6 space-y-1 mt-16 lg:mt-0">
             <SidebarLink to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" onClick={() => setIsMobileMenuOpen(false)} />
             <SidebarLink to="/execute" icon={<Activity size={18} />} label="Execute Trade" onClick={() => setIsMobileMenuOpen(false)} />
+            <SidebarLink to="/ai-coach" icon={<Brain size={18} />} label="AI Coach" onClick={() => setIsMobileMenuOpen(false)} />
+            <SidebarLink to="/ai-chat" icon={<MessageSquare size={18} />} label="Coach Chat" onClick={() => setIsMobileMenuOpen(false)} />
             <SidebarLink to="/rules" icon={<Shield size={18} />} label="Rule Engine" onClick={() => setIsMobileMenuOpen(false)} />
             <SidebarLink to="/violations" icon={<AlertTriangle size={18} />} label="Violations" onClick={() => setIsMobileMenuOpen(false)} />
             <SidebarLink to="/connect" icon={<Server size={18} />} label="Connect MT5" onClick={() => setIsMobileMenuOpen(false)} />
@@ -52,6 +56,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/execute" element={<ExecuteTrade />} />
+            <Route path="/ai-coach" element={<AICoach />} />
+            <Route path="/ai-chat" element={<AIChat />} />
             <Route path="/rules" element={<Rules />} />
             <Route path="/violations" element={<Violations />} />
             <Route path="/connect" element={<Connect />} />

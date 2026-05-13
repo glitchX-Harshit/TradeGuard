@@ -1,4 +1,8 @@
-import MetaTrader5 as mt5
+try:
+    import MetaTrader5 as mt5
+except ImportError:
+    mt5 = None
+    print("MetaTrader5 library not found. Running in simulation mode (Linux/Deployment).")
 from datetime import datetime
 
 class MT5Service:
@@ -6,6 +10,11 @@ class MT5Service:
         self.connected = False
 
     def connect(self, login_id: int, password: str, server: str):
+        if mt5 is None:
+            print("MT5 library not available. Simulations enabled.")
+            self.connected = True
+            return True
+
         if not mt5.initialize():
             print("initialize() failed")
             return False
@@ -19,12 +28,13 @@ class MT5Service:
             return False
 
     def disconnect(self):
-        mt5.shutdown()
+        if mt5 is not None:
+            mt5.shutdown()
         self.connected = False
 
     def get_account_info(self):
-        if not self.connected:
-            return {"balance": 0.0, "equity": 0.0, "margin": 0.0, "profit": 0.0}
+        if not self.connected or mt5 is None:
+            return {"balance": 100000.0, "equity": 100000.0, "margin": 0.0, "profit": 0.0}
         
         account_info = mt5.account_info()
         if account_info != None:
@@ -32,7 +42,7 @@ class MT5Service:
         return {"balance": 0.0, "equity": 0.0, "margin": 0.0, "profit": 0.0}
 
     def get_market_price(self, symbol: str, side: str):
-        if not self.connected:
+        if not self.connected or mt5 is None:
             return 1.1000
         
         tick = mt5.symbol_info_tick(symbol)
@@ -41,7 +51,7 @@ class MT5Service:
         return tick.ask if side == "BUY" else tick.bid
 
     def get_symbol_info(self, symbol: str):
-        if not self.connected:
+        if not self.connected or mt5 is None:
             return None
         return mt5.symbol_info(symbol)
 
@@ -87,12 +97,12 @@ class MT5Service:
         return round(rounded_price, info.digits)
 
     def execute_trade(self, symbol: str, side: str, lot_size: float, sl: float, tp: float):
-        if not self.connected:
+        if not self.connected or mt5 is None:
             return {
                 "success": True,
                 "ticket": int(datetime.timestamp(datetime.now())),
                 "price": 1.1000,
-                "message": "Simulated trade execution (MT5 disconnected)"
+                "message": "Simulated trade execution (MT5 disconnected or library missing)"
             }
             
         symbol_info = self.get_symbol_info(symbol)
@@ -169,8 +179,8 @@ class MT5Service:
         }
 
     def close_trade(self, ticket: int):
-        if not self.connected:
-            return {"success": True, "message": "Simulated trade closure (MT5 disconnected)"}
+        if not self.connected or mt5 is None:
+            return {"success": True, "message": "Simulated trade closure (MT5 disconnected or library missing)"}
         
         positions = mt5.positions_get(ticket=ticket)
         if not positions or len(positions) == 0:

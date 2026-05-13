@@ -5,3 +5,5 @@ pydantic
 python-dotenv
 MetaTrader5
 google-generativeai
+gunicorn
+uvicorn
